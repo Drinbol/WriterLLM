@@ -51,7 +51,8 @@ CREATE TABLE `ChapterBranches` (
                                    `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                    PRIMARY KEY (`branch_id`),
                                    INDEX `idx_chapter_id` (`chapter_id`),
-                                   FOREIGN KEY (`chapter_id`) REFERENCES `Chapter` (`chapter_id`)
+                                   FOREIGN KEY (`chapter_id`) REFERENCES `Chapter` (`chapter_id`),
+                                   UNIQUE `uniq_chapter_id_is_default` (`chapter_id`, `is_default`) -- 唯一约束
 );
 
 -- 创建 ChapterVersions 表,包括版本号、内容、字数、Token数、初始标志
@@ -126,6 +127,7 @@ CREATE TABLE `AIModelConfigs` (
 CREATE TABLE `Prompts` (
                            `prompt_id` INT NOT NULL AUTO_INCREMENT,
                            `entity_type_id` INT NOT NULL,
+                           `prompt_name` VARCHAR(255) NOT NULL,
                            `prompt_type` ENUM('PositivePrompt', 'NegativePrompt') NOT NULL,
                            `content` TEXT NOT NULL,
                            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -206,24 +208,7 @@ INSERT INTO `Chapter` (`book_id`, `chapter_number`, `chapter_name`) VALUES
                                                                         (3, 1, '第一章 陨落的天才'), (3, 2, '第二章 斗气大陆'),
                                                                         (4, 1, '第一章 夜宴'), (4, 2, '第二章 鸿胪寺之变');
 
--- 插入 ChapterBranches 表数据
-INSERT INTO `ChapterBranches` (`chapter_id`, `branch_name`, `description`, `is_default`) VALUES
-                                                                                             (1, '主线剧情', '第一章的主要情节发展', TRUE),
-                                                                                             (1, '支线剧情1', '第一章的支线情节1', FALSE),
-                                                                                             (2, '主线剧情', '第二章的主要情节发展', TRUE),
-                                                                                             (3, '主线剧情', '第三章的主要情节发展', TRUE),
-                                                                                             (3, '支线剧情1', '第三章的支线情节1', FALSE),
-                                                                                             (3, '支线剧情2', '第三章的支线情节2', FALSE);
-
--- 插入 ChapterVersions 表数据
-INSERT INTO `ChapterVersions` (`branch_id`, `version_number`, `content`, `word_count`, `token_count`, `is_initial`) VALUES
-                                                                                                                        (1, 1, '第一章主线剧情的初始版本内容...', 1000, 1500, TRUE),
-                                                                                                                        (1, 2, '第一章主线剧情的第二版内容,在初始版本上进行了修改...', 1200, 1800, FALSE),
-                                                                                                                        (2, 1, '第一章支线剧情1的内容...', 500, 750, TRUE),
-                                                                                                                        (3, 1, '第二章主线剧情的初始版本内容...', 800, 1200, TRUE),
-                                                                                                                        (4, 1, '第三章主线剧情的初始版本内容...', 1500, 2250, TRUE),
-                                                                                                                        (5, 1, '第三章支线剧情1的内容...', 600, 900, TRUE),
-                                                                                                                        (6, 1, '第三章支线剧情2的内容...', 800, 1200, TRUE);-- 插入 EntityType 表数据
+-- 插入 EntityType 表数据
 INSERT INTO `EntityType` (`type_name`) VALUES ('人物'), ('地点'), ('物品'), ('组织');
 
 -- 插入 Entities 表数据
@@ -240,12 +225,11 @@ INSERT INTO `AIModelConfigs` (`api_type`, `provider_name`, `model_name`, `api_en
                                                                                                         ('TextToImage', 'Anthropic', 'Claude', 'https://api.anthropic.com', 'your_api_key');
 
 -- 插入 Prompts 表数据
--- 插入 Prompts 表数据
-INSERT INTO `Prompts` (`entity_type_id`, `prompt_type`, `content`) VALUES
-                                                                       (1, 'PositivePrompt', '1girl, solo, smiling, school uniform, outdoors'),
-                                                                       (1, 'NegativePrompt', 'nsfw, lowres, bad anatomy, text, error, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry'),
-                                                                       (2, 'PositivePrompt', 'landscape, mountain, river, forest, blue sky, white clouds'),
-                                                                       (2, 'NegativePrompt', 'buildings, humans, animals, text, signature, watermark');
+INSERT INTO `Prompts` (`entity_type_id`, `prompt_name`,`prompt_type`, `content`) VALUES
+                                                                                     (1, '1girl','PositivePrompt', '1girl, solo, smiling, school uniform, outdoors'),
+                                                                                     (1, 'nonsfw','NegativePrompt', 'nsfw, lowres, bad anatomy, text, error, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry'),
+                                                                                     (2, 'landscape','PositivePrompt', 'landscape, mountain, river, forest, blue sky, white clouds'),
+                                                                                     (2, 'nobuildings','NegativePrompt', 'buildings, humans, animals, text, signature, watermark');
 
 -- 插入 Materials 表数据
 INSERT INTO `Materials` (`content`, `source`) VALUES
