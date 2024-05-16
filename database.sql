@@ -51,8 +51,7 @@ CREATE TABLE `ChapterBranches` (
                                    `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                    PRIMARY KEY (`branch_id`),
                                    INDEX `idx_chapter_id` (`chapter_id`),
-                                   FOREIGN KEY (`chapter_id`) REFERENCES `Chapter` (`chapter_id`),
-                                   UNIQUE `uniq_chapter_id_is_default` (`chapter_id`, `is_default`) -- 唯一约束
+                                   FOREIGN KEY (`chapter_id`) REFERENCES `Chapter` (`chapter_id`)
 );
 
 -- 创建 ChapterVersions 表,包括版本号、内容、字数、Token数、初始标志
@@ -208,24 +207,23 @@ INSERT INTO `Chapter` (`book_id`, `chapter_number`, `chapter_name`) VALUES
                                                                         (4, 1, '第一章 夜宴'), (4, 2, '第二章 鸿胪寺之变');
 
 -- 插入 ChapterBranches 表数据
-INSERT INTO ChapterBranches (chapter_id, branch_name, description, is_default) VALUES
-                                                                                   (1, '主线剧情', '第一章的主要情节发展', TRUE),
-                                                                                   (1, '支线剧情1', '第一章的支线情节1', FALSE),
-                                                                                   (2, '主线剧情', '第二章的主要情节发展', TRUE),
-                                                                                   (3, '主线剧情', '第三章的主要情节发展', TRUE),
-                                                                                   (3, '支线剧情1', '第三章的支线情节1', FALSE),
-                                                                                   (3, '支线剧情2', '第三章的支线情节2', FALSE);
+INSERT INTO `ChapterBranches` (`chapter_id`, `branch_name`, `description`, `is_default`) VALUES
+                                                                                             (1, '主线剧情', '第一章的主要情节发展', TRUE),
+                                                                                             (1, '支线剧情1', '第一章的支线情节1', FALSE),
+                                                                                             (2, '主线剧情', '第二章的主要情节发展', TRUE),
+                                                                                             (3, '主线剧情', '第三章的主要情节发展', TRUE),
+                                                                                             (3, '支线剧情1', '第三章的支线情节1', FALSE),
+                                                                                             (3, '支线剧情2', '第三章的支线情节2', FALSE);
 
 -- 插入 ChapterVersions 表数据
-INSERT INTO ChapterVersions (branch_id, version_number, content, word_count, token_count, is_initial) VALUES
-                                                                                                          (1, 1, '第一章的初始版本内容...', 1000, 1500, TRUE),
-                                                                                                          (1, 2, '第一章的第二版内容,在初始版本上进行了修改...', 1200, 1800, FALSE),
-                                                                                                          (2, 1, '第一章支线剧情1的内容...', 500, 750, TRUE),
-                                                                                                          (3, 1, '第二章的初始版本内容...', 800, 1200, TRUE),
-                                                                                                          (4, 1, '第三章的初始版本内容...', 1500, 2250, TRUE),
-                                                                                                          (5, 1, '第三章支线剧情1的内容...', 600, 900, TRUE),
-                                                                                                          (6, 1, '第三章支线剧情2的内容...', 800, 1200, TRUE);
--- 插入 EntityType 表数据
+INSERT INTO `ChapterVersions` (`branch_id`, `version_number`, `content`, `word_count`, `token_count`, `is_initial`) VALUES
+                                                                                                                        (1, 1, '第一章主线剧情的初始版本内容...', 1000, 1500, TRUE),
+                                                                                                                        (1, 2, '第一章主线剧情的第二版内容,在初始版本上进行了修改...', 1200, 1800, FALSE),
+                                                                                                                        (2, 1, '第一章支线剧情1的内容...', 500, 750, TRUE),
+                                                                                                                        (3, 1, '第二章主线剧情的初始版本内容...', 800, 1200, TRUE),
+                                                                                                                        (4, 1, '第三章主线剧情的初始版本内容...', 1500, 2250, TRUE),
+                                                                                                                        (5, 1, '第三章支线剧情1的内容...', 600, 900, TRUE),
+                                                                                                                        (6, 1, '第三章支线剧情2的内容...', 800, 1200, TRUE);-- 插入 EntityType 表数据
 INSERT INTO `EntityType` (`type_name`) VALUES ('人物'), ('地点'), ('物品'), ('组织');
 
 -- 插入 Entities 表数据
